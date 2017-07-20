@@ -1,7 +1,7 @@
 ﻿
 var logoSecondaryTileId = "JSToastRouting.Logo";
 
-function addLiveTile(title, parameters) {
+function addLiveTile(id, title, parameters) {
     if (typeof Windows != 'undefined') {
         // Prepare package images for all four tile sizes in our tile to be pinned as well as for the square30x30 logo used in the Apps view.  
         var square150x150Logo = new Windows.Foundation.Uri("ms-appx:///Assets/square150x150Tile-sdk.png");
@@ -18,7 +18,7 @@ function addLiveTile(title, parameters) {
         // It can be set to TileSize.Square150x150, TileSize.Wide310x150, or TileSize.Default.  
         // If set to TileSize.Wide310x150, then the asset for the wide size must be supplied as well.
         // TileSize.Default will default to the wide size if a wide size is provided, and to the medium size otherwise. 
-        var secondaryTile = new Windows.UI.StartScreen.SecondaryTile(logoSecondaryTileId,
+        var secondaryTile = new Windows.UI.StartScreen.SecondaryTile(logoSecondaryTileId + id,
             title,
             tileActivationArguments,
             square150x150Logo,
@@ -55,5 +55,66 @@ function addLiveTile(title, parameters) {
         // RequestCreateForSelectionAsync or RequestCreateAsync is not guaranteed to run.  For an example of how to use the OnSuspending event to do
         // work after RequestCreateForSelectionAsync or RequestCreateAsync returns, see Scenario9_PinTileAndUpdateOnSuspend in the SecondaryTiles.WindowsPhone project.
         secondaryTile.requestCreateAsync();
+    }
+}
+
+// Pop-up General Toast Notification to Desktop/Action Center
+function updateLiveTile(id, message, parameters) {
+    // Log the message to the console
+    console.log("Tile: " + message);
+
+    if (typeof Windows != 'undefined') {
+        //Error detection
+        // var text = document.createTextNode("Calling the Notifications")
+        // document.body.appendChild(text);
+        // Log to the console
+        var Notifications = Windows.UI.Notifications;
+        //Get the XML template where the notification content will be suplied
+        var template = Notifications.TileTemplateType.tileSquare150x150PeekImageAndText01;
+        var tileXml = Notifications.TileUpdateManager.getTemplateContent(template);
+        //Supply the text to the XML content
+        var tileTextElements = tileXml.getElementsByTagName("text");
+        tileTextElements[0].appendChild(tileXml.createTextNode(message));
+        //Supply an image for the notification
+        var tileImageElements = tileXml.getElementsByTagName("image");
+        //Set the image this could be the background of the note, get the image from the web
+        tileImageElements[0].setAttribute("src", "http://lorempixel.com/150/150/food/");
+        tileImageElements[0].setAttribute("alt", "red graphic");
+        //Specify a long duration
+        var tileNode = tileXml.selectSingleNode("/tile");
+        tileNode.setAttribute("duration", "long");
+        //Specify launch paramater
+        tileNode.setAttribute("launch", JSON.stringify(parameters)); // Sets these parameters to capture when relaunching the application
+        //Create a toast notification based on the specified XML
+        var notification = new Notifications.TileNotification(tileXml);
+        notification.tag = message;
+
+        // Send the notification to the primary tile
+        if (id === 0) {
+            Notifications.TileUpdateManager.createTileUpdaterForApplication().update(notification);
+        } else {
+            // Get its updater and send the notification
+            Notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(logoSecondaryTileId + id).update(notification);
+        }
+
+    } else {
+        //TODO: Fallback to website functionality
+        console.log("ERROR: No Windows namespace was detected");
+    }
+};
+
+function clearLiveTile(id) {
+    console.log("Clear Tile: " + id);
+
+    if (typeof Windows != 'undefined') {
+        var Notifications = Windows.UI.Notifications;
+
+        // Clear the notification to the primary tile
+        if (id === 0) {
+            Notifications.TileUpdateManager.createTileUpdaterForApplication().clear();
+        } else {
+            // Get its updater and send the clear request
+            Notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(logoSecondaryTileId + id).clear();
+        }
     }
 }
