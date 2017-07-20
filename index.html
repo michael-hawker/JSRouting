@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>JSToastRouting</title>
+    <link href="css/default.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <p>Sample app which shows Toasting and Toast Parameters.</p>
+        <p class="indent"><input type="checkbox" id="navigate" /><label for="navigate">Navigate Immediately</label></p>
+        <button id="toast1" class="indent">Make Toast 1</button>
+        <button id="toast2">Make Toast 2</button>
+    </div>
+    <div>
+        <p>Create Live Tiles</p>
+        <p>
+            <button id="liveaddprimary" class="indent">Pin App Tile</button>
+            <button id="liveadd">Add Secondary Tile</button>
+            <button id="liveadd2">Add 2nd Secondary Tile</button>
+        </p>
+    </div>
+    <div>
+        <p>Update Live Tiles</p>
+        <p>
+            <button id="liveupdate" class="indent">Update Primary Tile</button>
+            <button id="liveupdate2">Update Secondary Tile</button>
+            <button id="liveupdate3">Update 2nd Secondary Tile</button>
+        </p>
+    </div>
+    <div>
+        <p>Clear Live Tiles</p>
+        <p>
+            <button id="liveclear" class="indent">Clear Primary Tile</button>
+            <button id="liveclear2">Clear Secondary Tile</button>
+            <button id="liveclear3">Clear 2nd Secondary Tile</button>
+        </p>
+    </div>
+    <div>
+        <p>Last Activation Parameters:</p>
+        <div id="arguments" class="indent"></div>
+
+        <p>Opened from Tile:</p>
+        <div id="tileid" class="indent"></div>
+    </div>
+    <div>
+        <p>Primary Tile Info:</p>
+        <div id="primary" class="indent"></div>
+        <p>Secondary Tile Info:</p>
+        <div id="secondary" class="indent"></div>
+    </div>
+
+    <!-- Load Scripts at End for Perf -->
+    <script src="js/toast.js"></script>
+    <script src="js/livetile.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
