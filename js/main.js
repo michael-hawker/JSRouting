@@ -35,23 +35,30 @@ window.addEventListener("DOMContentLoaded", (ev) => {
         } else {
             console.log("API is only supported on Creators Update.");
         }
+        window.setTimeout(getTileInfo, 1500);
     });
     document.getElementById("liveadd").addEventListener("click", () => {
         addLiveTile(1, 'Test Tile', { time: new Date().toLocaleTimeString(), message: "hello from a tile", "user": "12345" });
+        window.setTimeout(getTileInfo, 1500);
     });
     document.getElementById("liveadd2").addEventListener("click", () => {
         addLiveTile(2, 'Test Tile 2', { time: new Date().toLocaleTimeString(), message: "hello from tile 2", "user": "12345" });
+        window.setTimeout(getTileInfo, 1500);
     });
 
     // Update Live Tile Buttons
     document.getElementById("liveupdate").addEventListener("click", () => {
-        updateLiveTile(0, 'Primary Test', { time: new Date().toLocaleTimeString(), message: "primary tile", "user": "12345" });
+        updateLiveTile(0, 'Primary Test');
     });
     document.getElementById("liveupdate2").addEventListener("click", () => {
-        updateLiveTile(1, 'Secondary Test', { time: new Date().toLocaleTimeString(), message: "secondary tile", "user": "12345" });
+        updateLiveTile(1, 'Secondary Test');
+        changeTileArguments(1, { time: new Date().toLocaleTimeString(), message: "secondary tile", "user": "12345" });
+        window.setTimeout(getTileInfo, 500);
     });
-    document.getElementById("liveupdate2").addEventListener("click", () => {
-        updateLiveTile(2, 'Third Test', { time: new Date().toLocaleTimeString(), message: "third tile", "user": "12345" });
+    document.getElementById("liveupdate3").addEventListener("click", () => {
+        updateLiveTile(2, 'Third Test');
+        changeTileArguments(2, { time: new Date().toLocaleTimeString(), message: "third tile", "user": "12345" });
+        window.setTimeout(getTileInfo, 500);
     });
 
     // Clear Live Tile Buttons
@@ -60,35 +67,45 @@ window.addEventListener("DOMContentLoaded", (ev) => {
     });
     document.getElementById("liveclear2").addEventListener("click", () => {
         clearLiveTile(1);
+        changeTileArguments(1, { time: new Date().toLocaleTimeString(), message: "secondary cleared", "user": "12345" });
+        window.setTimeout(getTileInfo, 500);
     });
     document.getElementById("liveclear3").addEventListener("click", () => {
         clearLiveTile(2);
+        changeTileArguments(2, { time: new Date().toLocaleTimeString(), message: "third cleared", "user": "12345" });
+        window.setTimeout(getTileInfo, 500);
     });
 
     // Show activation arguments
     document.getElementById("arguments").innerText = arguments;
     document.getElementById("tileid").innerText = tileid;
 
-    // Show App Tile List
-    Windows.UI.StartScreen.SecondaryTile.findAllAsync().then((tiles) => {
-        document.getElementById("secondary").innerHTML = "";
-        tiles.forEach((tile) => {
-            document.getElementById("secondary").innerHTML += "<p>Id: " + tile.tileId + "</p><p>Arguments: " + tile.arguments + "</p>";
-        });
-    });
+    getTileInfo();
+});
 
-    // Only works on Creators Edition
-    if (Windows.Foundation.Metadata.ApiInformation.isTypePresent("Windows.UI.StartScreen.StartScreenManager")) {
-        // Primary tile API's supported!
-        Windows.ApplicationModel.Package.current.getAppListEntriesAsync().then((entries) => {
-            var entry = entries[0];
-
-            Windows.UI.StartScreen.StartScreenManager.getDefault().containsAppListEntryAsync(entry).then((isPinned) => {
-                document.getElementById("primary").innerHTML = "<p>Display Name: " + entry.displayInfo.displayName + "</p><p>IsPinned: " + isPinned + "</p > ";
+function getTileInfo() {
+    if (window.Windows) {
+        // Show App Tile List
+        Windows.UI.StartScreen.SecondaryTile.findAllAsync().then((tiles) => {
+            document.getElementById("secondary").innerHTML = "";
+            tiles.forEach((tile) => {
+                document.getElementById("secondary").innerHTML += "<p>Id: " + tile.tileId + "</p><p>Arguments: " + tile.arguments + "</p>";
             });
         });
+
+        // Only works on Creators Edition
+        if (Windows.Foundation.Metadata.ApiInformation.isTypePresent("Windows.UI.StartScreen.StartScreenManager")) {
+            // Primary tile API's supported!
+            Windows.ApplicationModel.Package.current.getAppListEntriesAsync().then((entries) => {
+                var entry = entries[0];
+
+                Windows.UI.StartScreen.StartScreenManager.getDefault().containsAppListEntryAsync(entry).then((isPinned) => {
+                    document.getElementById("primary").innerHTML = "<p>Display Name: " + entry.displayInfo.displayName + "</p><p>IsPinned: " + isPinned + "</p > ";
+                });
+            });
+        }
     }
-});
+}
 
 // Check for Windows Activation
 if (window.Windows) {

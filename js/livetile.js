@@ -58,8 +58,33 @@ function addLiveTile(id, title, parameters) {
     }
 }
 
+// Update an existing secondary tile's arguments.
+function changeTileArguments(id, parameters) {
+    console.log("Update Arguments: " + id + ", " + JSON.stringify(parameters));
+
+    if (typeof Windows != 'undefined') {
+        if (id !== 0) {
+            return Windows.UI.StartScreen.SecondaryTile.findAllAsync().then((tiles) => {
+                return tiles.some((tile) => {
+                    if (tile.tileId === logoSecondaryTileId + id) {
+                        // Update Arguments of our Tile
+                        tile.arguments = JSON.stringify(parameters);
+
+                        // Push update
+                        tile.updateAsync();
+
+                        return true; // break
+                    }
+                });
+            });
+        }    
+    }
+
+    return false;
+}
+
 // Pop-up General Toast Notification to Desktop/Action Center
-function updateLiveTile(id, message, parameters) {
+function updateLiveTile(id, message) {
     // Log the message to the console
     console.log("Tile: " + message);
 
@@ -83,18 +108,23 @@ function updateLiveTile(id, message, parameters) {
         //Specify a long duration
         var tileNode = tileXml.selectSingleNode("/tile");
         tileNode.setAttribute("duration", "long");
-        //Specify launch paramater
-        tileNode.setAttribute("launch", JSON.stringify(parameters)); // Sets these parameters to capture when relaunching the application
         //Create a toast notification based on the specified XML
         var notification = new Notifications.TileNotification(tileXml);
-        notification.tag = message;
+        notification.tag = message.substring(0, 15); // only 16 characters can be used in tag.
 
-        // Send the notification to the primary tile
-        if (id === 0) {
-            Notifications.TileUpdateManager.createTileUpdaterForApplication().update(notification);
-        } else {
-            // Get its updater and send the notification
-            Notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(logoSecondaryTileId + id).update(notification);
+        try {
+            // Send the notification to the primary tile
+            if (id === 0) {
+                Notifications.TileUpdateManager.createTileUpdaterForApplication().update(notification);
+            } else {
+                // Get its updater and send the notification
+                Notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(logoSecondaryTileId + id).update(notification);
+            }
+
+            return true;
+        } catch (err) {
+            // Tile is probably unpinned.
+            return false;
         }
 
     } else {
@@ -109,12 +139,18 @@ function clearLiveTile(id) {
     if (typeof Windows != 'undefined') {
         var Notifications = Windows.UI.Notifications;
 
-        // Clear the notification to the primary tile
-        if (id === 0) {
-            Notifications.TileUpdateManager.createTileUpdaterForApplication().clear();
-        } else {
-            // Get its updater and send the clear request
-            Notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(logoSecondaryTileId + id).clear();
+        try {
+            // Clear the notification to the primary tile
+            if (id === 0) {
+                Notifications.TileUpdateManager.createTileUpdaterForApplication().clear();
+            } else {
+                // Get its updater and send the clear request
+                Notifications.TileUpdateManager.createTileUpdaterForSecondaryTile(logoSecondaryTileId + id).clear();
+            }
+            return true;
+        } catch (err) {
+            // Tile most likely unpinned.
+            return false;
         }
     }
 }
