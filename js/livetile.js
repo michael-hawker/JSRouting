@@ -89,25 +89,30 @@ function updateLiveTile(id, message) {
     console.log("Tile: " + message);
 
     if (typeof Windows != 'undefined') {
-        //Error detection
-        // var text = document.createTextNode("Calling the Notifications")
-        // document.body.appendChild(text);
-        // Log to the console
         var Notifications = Windows.UI.Notifications;
+
         //Get the XML template where the notification content will be suplied
         var template = Notifications.TileTemplateType.tileSquare150x150PeekImageAndText01;
         var tileXml = Notifications.TileUpdateManager.getTemplateContent(template);
+
         //Supply the text to the XML content
         var tileTextElements = tileXml.getElementsByTagName("text");
-        tileTextElements[0].appendChild(tileXml.createTextNode(message));
+        if (tileTextElements != null && tileTextElements.length > 0) {
+            tileTextElements[0].appendChild(tileXml.createTextNode(message));
+        }
+
         //Supply an image for the notification
-        var tileImageElements = tileXml.getElementsByTagName("image");
         //Set the image this could be the background of the note, get the image from the web
-        tileImageElements[0].setAttribute("src", "http://lorempixel.com/150/150/food/");
-        tileImageElements[0].setAttribute("alt", "red graphic");
+        var tileImageElements = tileXml.getElementsByTagName("image");
+        if (tileImageElements != null && tileImageElements.length > 0) {
+            tileImageElements[0].setAttribute("src", "http://lorempixel.com/150/150/food/");
+            tileImageElements[0].setAttribute("alt", "red graphic");
+        }
+
         //Specify a long duration
         var tileNode = tileXml.selectSingleNode("/tile");
         tileNode.setAttribute("duration", "long");
+
         //Create a toast notification based on the specified XML
         var notification = new Notifications.TileNotification(tileXml);
         notification.tag = message.substring(0, 15); // only 16 characters can be used in tag.

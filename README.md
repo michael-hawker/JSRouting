@@ -10,6 +10,6 @@ Demonstrates the following features:
  - Navigating to a page based on clicking a Toast
  - Pinning your App to Start [Creators Update Only]
  - Pinning a Secondary Tile
- - Knowing which Tile was used to open the App
+ - Show which Tile was used to open the App
  - Update Tile Notifications and Launch Arguments
  - Clearing Tile Notifications
