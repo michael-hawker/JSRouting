@@ -13,3 +13,14 @@ Demonstrates the following features:
  - Show which Tile was used to open the App
  - Update Tile Notifications and Launch Arguments
  - Clearing Tile Notifications
+
+Usages
+------
+
+Static Toast Images are public domain from openclipart.org.
+
+Uses [Lorem Pixel](http://lorempixel.com/) for dynamic image content.
+
+License
+-------
+MIT
